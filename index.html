@@ -39,7 +39,111 @@
 
     <script>
 // === COLOCA SEU LINK DO GOOGLE AQUI ===
+const LINK = '<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTROLE DA LIVE</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+        body{background:#121212;color:#fff;min-height:100vh;padding:30px 20px;max-width:450px;margin:0 auto;}
+        h1{text-align:center;color:#4ade80;margin-bottom:30px;font-size:26px;}
+        .caixa{background:#1e1e1e;padding:25px;border-radius:12px;text-align:center;margin-bottom:25px;}
+        .valor{font-size:46px;font-weight:bold;margin-bottom:10px;}
+        .entregas{font-size:22px;color:#fbbf24;}
+        input{width:100%;padding:16px;font-size:20px;text-align:center;border:none;border-radius:8px;background:#2a2a3c;color:#fff;margin-bottom:15px;}
+        button{width:100%;padding:18px;font-size:18px;font-weight:bold;border:none;border-radius:8px;margin:6px 0;cursor:pointer;}
+        .btn-add{background:#16a34a;}
+        .btn-sub{background:#dc2626;}
+        .btn-zero{background:#2563eb;}
+        .status{text-align:center;margin-top:15px;padding:10px;border-radius:6px;display:none;}
+        .ok{background:#163322;color:#86efac;display:block !important;}
+        .erro{background:#331616;color:#fca5a5;display:block !important;}
+    </style>
+</head>
+<body>
+    <h1>🎮 CONTROLE DA LIVE</h1>
+
+    <div class="caixa">
+        <div class="valor" id="v">R$ 0,00</div>
+        <div class="entregas" id="e">ENTREGAS: 0</div>
+    </div>
+
+    <input type="number" id="campo" placeholder="Valor da entrega">
+
+    <button class="btn-add" onclick="adicionar()">➕ ADICIONAR 🔔</button>
+    <button class="btn-sub" onclick="subtrair()">➖ SUBTRAIR</button>
+    <button class="btn-zero" onclick="zerar()">🔄 ZERAR TUDO</button>
+
+    <div id="status" class="status"></div>
+
+    <script>
+// === COLOCA SEU LINK DO GOOGLE AQUI ===
 const LINK = 'https://script.google.com/macros/s/AKfycbwExJLpFoSNCumgXoy7lnhZPv8DvlFljWpfk1JJk1BBuO2QoVu7jesXIr4G1mF0x8yJ/exec';
+
+async function atualizarTela(){
+  try{
+    const r=await fetch(LINK);
+    const d=await r.json();
+    document.getElementById('v').textContent='R$ '+d.valor.toFixed(2).replace('.',',');
+    document.getElementById('e').textContent='ENTREGAS: '+d.entregas;
+    status('ok','✅ Conectado!');
+  }catch{
+    status('erro','⚠️ Erro — recarregue');
+  }
+}
+
+async function adicionar(){
+  const val=document.getElementById('campo').value;
+  if(!val){status('erro','Digite um valor!');return;}
+  try{
+    await fetch(LINK+'?valor='+val);
+    document.getElementById('campo').value='';
+    await atualizarTela();
+    status('ok','✅ Adicionado: R$ '+val);
+  }catch{
+    status('erro','❌ Erro ao enviar');
+  }
+}
+
+async function subtrair(){
+  const val=document.getElementById('campo').value;
+  if(!val){status('erro','Digite um valor!');return;}
+  try{
+    await fetch(LINK+'?valor='+val+'&acao=subtrair');
+    document.getElementById('campo').value='';
+    await atualizarTela();
+    status('ok','✅ Subtraído: R$ '+val);
+  }catch{
+    status('erro','❌ Erro ao enviar');
+  }
+}
+
+async function zerar(){
+  if(!confirm('Zerar tudo?'))return;
+  try{
+    await fetch(LINK+'?acao=zerar');
+    await atualizarTela();
+    status('ok','✅ ZERADO!');
+  }catch{
+    status('erro','❌ Erro ao zerar');
+  }
+}
+
+function status(tipo,texto){
+  const s=document.getElementById('status');
+  s.className='status '+tipo;
+  s.textContent=texto;
+  clearTimeout(window.t);
+  window.t=setTimeout(()=>{s.style.display='none';},3000);
+}
+
+atualizarTela();
+setInterval(atualizarTela,3000);
+    </script>
+</body>
+</html>'https://script.google.com/macros/s/AKfycbw7yNTFk0nWYlbuS_jGqyuasN7eMje2ecSZf21GVj-2IlggCfSkGjHtJzs79I6tRgQM/exec;
 
 async function atualizarTela(){
   try{
